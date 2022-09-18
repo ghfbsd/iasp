@@ -1,0 +1,198 @@
+'\" e
+.TH TPTTSUB 3
+.SH NAME
+tpttsub \- subroutine interface to travel time tables using tau-splines
+.SH SYNOPSIS
+.B @@FC@@ -o prog.o prog.f @@LIBLOC@@/tpttsub.o
+.SH DESCRIPTION
+tpttsub.o is a subroutine interface to access the travel times tables for
+a wide variety of seismic phases and return values for use in programs.
+It is designed to be Fortran callable, but can also be called by C language
+routines as well by knowledgeable users.
+.PP
+There are three main types of access to the tables:
+.nf
+- to get the travel time for a single arrival at a particular range,
+- to get a table of travel times for all arrivals at a particular range,
+- to get a table of slowness, range and travel time for a phase,
+.fi
+plus a few auxiliary routines to choose the velocity model, process phase
+names, and to obtain wavespeeds at the source depth.
+.PP
+There is a default set of tables (@@MODNAM@@) that depends on the
+.IR ttimes (1)
+package's installation details, but this can be changed through a call to a
+subroutine that
+.IR tpttsub (3)
+provides.
+.PP
+A list of the subroutines provided by
+.IR tpttsub (3)
+follows.
+.SS tpmod - change travel time tables
+Called by
+.nf
+
+      call tpmod(\f2module\fP)
+
+.fi
+where
+.I module
+is a character value containing the name of a velocity model.
+Subsequent calls to any other subroutines will return values associated with
+that model.
+.SS tpttsv - obtain source P and S wavespeeds
+Called by
+.nf
+
+      call tpttsv(\f2depth\fP,\f2vp\fP,\f2vs\fP)
+
+.fi
+where
+.I depth
+is the source depth (km).
+The subroutine returns the P and S wavespeeds at the source in
+.I vp
+and
+.IR vs .
+.SS tptt - return the travel time for a specific phase
+Called as a function by
+.nf
+
+      x = tptt(\f2id\fP,\f2delta\fP,\f2depth\fP,\f2dtdd\fP,\f2dtdh\fP)
+
+.fi
+where
+.I id
+is a phase name,
+.I delta
+is a distance (degrees), and
+.I depth
+is a source depth (km).
+The function return value
+.I x
+is a travel time for the named phase if positive, -1 if the phase name is
+not known, and -2 if there are multiple arrivals for that phase (for example
+P in the distance range of the 410 or 660 km discontinuity triplication).
+On return, if
+.IR X >0,
+the return values
+.I dtdd
+and
+.I dtdh
+contain the slowness (sec/deg) and change in travel time with source depth
+(sec/km).
+.SS mtptt - return some or all arrivals
+Called as a function by
+.nf
+
+      n = mtptt(\f2id\fP,\f2delta\fP,\f2depth\fP,\f2max\fP,\f2idphs\fP,\f2tt\fP,\f2dtdd\fP,\f2dtdh\fP)
+
+.fi
+where
+.I id
+is a phase name (generic such as ``P'' or all phases ``all''),
+.I delta
+is a distance (degrees),
+.I depth
+is a source depth (km), and
+.I max
+is the size of the arrays into which arrival information will be returned.
+The function return value,
+.IR n ,
+gives the number of arrivals at that particular distance, and might be greater
+than
+.IR max ,
+indicating that the return information was truncated.
+If
+.IR n <0,
+the phase name wasn't recognized.
+The return values,
+.IR idphs ,
+.IR tt ,
+.IR dtdd ,
+and
+.I dtdh
+are all arrays of size
+.IR max .
+.I idphs
+is a character array (6 characters or larger per entry), whereas the rest
+are arrays of real numbers.
+On return each array entry contains a phase name
+.RI ( idphs )
+and corresponding travel time
+.RI ( tt ),
+slowness
+.RI ( dtdd )
+and change of travel time with source depth
+.RI ( dtdh ).
+.SS ntptt - return some or all arrivals
+Called as a function by
+.nf
+
+      n = ntptt(\f2id\fP,\f2delta\fP,\f2depth\fP,\f2max\fP,\f2idphs\fP,\f2tt\fP,\f2dtdd\fP,\f2dtdh\fP,\f2d2dd2\fP)
+
+.fi
+Identical to mttpt except for the additional output parameter
+.i dt2dd2
+which returns the derivative of slowness with respect to range,
+d/d(delta)[dt/d(delta)].
+.EN
+.SS txtb - return slowness, range and travel time for a single phase
+Called as a subroutine by
+.nf
+
+      call txtb(\f2ph\fP,\f2depth\fP,\f2nmax\fP,\f2n\fP,\f2p\fP,\f2x\fP,\f2tt\fP)
+
+.fi
+where
+.I ph
+is a (character) phase name (including a branch name if relevant, such as
+``SKSac''),
+.I depth
+is the source depth (km), and
+.I nmax
+is the capacity of the output arrays.
+.IR p ,
+.IR x ,
+and
+.IR tt ,
+are output arrays (of size
+.IR nmax ),
+that contain the slowness (sec/deg), range (deg) and travel time (sec) of the
+phase.
+.I n
+contains how many values were returned (which may be larger than
+.I nmax
+if the output was truncated).
+.SS phnmg - return the generic arrival type of a specific branch name
+The routines
+.BR tptt ,
+.B mtptt
+and
+.B ntptt
+recognize generic phase names rather than specific branch names.
+To strip a branch name from a string to make it generic, use
+.B phnmg
+as below:
+.nf
+
+      character*(\f2n\fP) phnmg
+      str = phnmg(\f2id\fP)
+
+.fi
+The function return value
+.I str
+is a character string of length
+.I n
+with the input string
+.I id
+stripped of any branch name infixes or suffixes.
+The calling program must declare the function to return strings of the desired
+length
+.IR n .
+.SH SEE ALSO
+ttimes(1)
+.SH AUTHORS
+George Helffrich, Carnegie Institution of Washington, U. Bristol,
+Tokyo Inst. of Technology.

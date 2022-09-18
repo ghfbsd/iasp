@@ -1,0 +1,69 @@
+Tau-p programs and utilities -- G. Helffrich/U. Bristol,1991 - 2020.
+   Last revised 17 Nov. 2020.
+
+This code is a modification of the original Buland and Kennett code to compute
+  tau-p tables for the iasp91 model.  I modified it to do the following things:
+
+1) do automatic configuration;
+2) remove Fortran language constructs that prevent it from compiling on the
+   GCC Fortran compilers;
+3) to write table formats that are self describing (in size) and do not require
+   recompilation of previously-built travel time tables if the table storage
+   size changes;
+4) adds additional phases to the set that is computed in the tables, viz.
+   depth phases for ScS and PcP and diffracted phases for PKP branches;
+5) adds a subroutine-callable interface to the tables;
+6) adds tables for different models (see below);
+7) adds more depth phases and optionally more core phases;
+8) handles non-Earth planetary models, and models that lack an inner core;
+9) queries tau-p tables to return slowness, range and travel time for a specific
+   branch;
+10) adds man-style documentation for use.
+
+See README for a lengthy description of the changes.
+
+This will build the ttimes program and various useful models:
+  iasp91, ak135, ek137, fakeprem, fakeprem20s, sp6, kghj, pemc for Earth, and
+  ss97a (Sohl & Spohn, 1997) and r11dw (Rivoldini et al., 2011) for Mars. 
+
+The default model is the last in the list assigned to MODELS in the Makefile.
+Currently, it is ak135.  To select alternative models, use, e.g.
+
+   ttimes -model iasp91
+
+where the model name can be any in the previous list.
+
+This version is made from a configure file.  To configure and install:
+
+./configure
+make
+make install
+make clean
+
+This will build a default set of travel time tables for all models.  To build
+a smaller set of tables by eliminating the depth phase arrivals for core
+reflections and multiple core phases, use the --disable-depth option:
+
+./configure --disable-depth
+
+To enable generation of multiple core bounce phases (PmKP m=3,4 and SmKS
+m=3,4,5), configure with --enable-core option:
+
+./configure --enable-core
+
+This can be used in conjunction with --disable-depth.
+
+Default install location for travel time tables and linkable subroutine code
+is /usr/local/lib, and for the ttimes program is /usr/local/bin.  See
+
+./configure --help=short
+
+for directions explaining how to change this.  The file tpttsub.o is a
+subroutine interface to the tables, which is installed in the library directory.
+See the man page for tpttsub for how to call the subroutines.  After install,
+it should be available through the man command.  If not, or not yet installed,
+after make, try
+
+    nroff -man tpttsub.3
+
+for directions.
