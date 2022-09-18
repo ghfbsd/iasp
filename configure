@@ -581,7 +581,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 PACKAGE_URL=
 
-ac_unique_file="limits.inc"
+ac_unique_file="limits.inc.in"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 NOPT
@@ -2783,11 +2783,6 @@ FFLAGS=`echo "${KEEP}"`
 
 
 
-
-
-
-
-
 LIBS="${LDFLAGS} ${LIBS}"
 
 ac_ext=f
@@ -2834,18 +2829,23 @@ cat >conftest.$ac_ext <<_ACEOF
       program main
       end
 _ACEOF
-F77SIZE="-Nq300 -Nn2000"
-KEEP=`eval "$F77 -c ${F77SIZE} conftest.$ac_ext 2>&1  1>/dev/null"`
-if test $? -eq 0 -a -s conftest.$ac_ext ; then
-   for L in $KEEP ; do
-      case $L in
-        unrecognized) F77SIZE= ;;
-        *) ;;
-      esac
-   done
-else
-   F77SIZE=
+F77MISC=
+for F in Nq300 Nn2000 std=legacy ; do
+   FFLAGS="-c -$F"
+cat > conftest.$ac_ext <<_ACEOF
+      program main
+
+      integer array(2)
+      array(1)=1
+      array(2)=2
+
+      end
+_ACEOF
+if ac_fn_f77_try_compile "$LINENO"; then :
+  F77MISC="${F77MISC} -$F"
 fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+done
 rm -f conftest.$ac_objext conftest.$ac_ext
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -2853,8 +2853,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-FFLAGS="${SV_FFLAGS} ${F77SIZE}"
-
+FFLAGS="${SV_FFLAGS} ${F77MISC}"
 
 test ${enable_debug-no} = yes && \
     ADD_FFLAGS="${ADD_FFLAGS} -g${FDEBUG}"
@@ -4066,3 +4065,6 @@ fi
 
 echo "Configured with Fortran compiler" $F77
 echo "Configured with Fortran compiler flags" $FFLAGS $ADD_FFLAGS
+echo "Programs will be installed in:" ${prefix}/bin
+echo "Libraries will be installed in:" ${prefix}/lib
+echo "man pages will be installed in:" ${datarootdir}/man

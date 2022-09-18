@@ -23,7 +23,7 @@ This code is a modification of the original Buland and Kennett code to compute
 See README for a lengthy description of the changes.
 
 This will build the ttimes program and various useful models:
-  iasp91, ak135, ek137, fakeprem, fakeprem20s, sp6, kghj, pemc for Earth, and
+  iasp91, ak135, ek137, fakeprem, fakeprem20s, sp6, pemc for Earth, and
   ss97a (Sohl & Spohn, 1997) and r11dw (Rivoldini et al., 2011) for Mars. 
 
 The default model is the last in the list assigned to MODELS in the Makefile.

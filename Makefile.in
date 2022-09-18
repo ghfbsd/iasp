@@ -23,7 +23,6 @@ MODELS= \
 	iasp91/emiasp91 \
 	sp6/emsp6 \
 	fakeprem/emfakeprem \
-	kghj/emkghj \
 	pemc/empemc \
 	fakeprem20s/emfakeprem20s \
         ek137/emek137 \

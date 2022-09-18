@@ -1,1 +1,17 @@
 TODO
+*.o
+*.a
+*.hed
+*.tbl
+*.lis
+Makefile
+limits.inc
+version.inc
+config.log
+config.status
+remodl
+setbrn
+ttimes
+ttimes.1
+tpttsub.3
+autom4te.cache/
