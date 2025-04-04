@@ -38,6 +38,36 @@ The general changes are:
 * optionally, under configuration control, adds more depth phases
    and core phases.
 
+
+To configure and install:
+
+```
+./configure
+make
+make install
+make clean
+```
+
+This will build a default set of travel time tables for all models.  To build
+a smaller set of tables by eliminating the depth phase arrivals for core
+reflections and multiple core phases, use the `--disable-depth` option:
+```
+./configure --disable-depth
+```
+To enable generation of multiple core bounce phases (PmKP m=3,4 and SmKS
+m=3,4,5), configure with `--enable-core` option:
+```
+./configure --enable-core
+```
+This can be used in conjunction with `--disable-depth`.
+
+Default install location for travel time tables and linkable subroutine code
+is `/usr/local/lib`, and for the ttimes program is `/usr/local/bin`.  See
+```
+./configure --help=short
+```
+for directions explaining how to change this.
+
 ```
                                  TAU
    
